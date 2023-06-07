@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import {
+  Column,
   ColumnDef,
   SortingState,
   flexRender,
@@ -9,7 +10,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
+import { ArrowUpDown } from "lucide-react"
 
+import { Button } from "@/components/ui/button"
 import {
   Table,
   TableBody,
@@ -86,5 +89,25 @@ export function DataTable<TData, TValue>({
         </TableBody>
       </Table>
     </div>
+  )
+}
+
+type SortButtonProps<TData, TValue> = {
+  column: Column<TData, TValue>
+  field: string
+}
+
+export function SortButton<TData, TValue>({
+  column,
+  field,
+}: SortButtonProps<TData, TValue>) {
+  return (
+    <Button
+      variant="ghost"
+      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+    >
+      {field}
+      <ArrowUpDown className="ml-2 h-4 w-4" />
+    </Button>
   )
 }

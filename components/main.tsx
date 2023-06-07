@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import { DataTable } from "@/components/data-table"
+import { DataTable, SortButton } from "@/components/data-table"
 import { OptionsPopover } from "@/components/options-popover"
 
 export function MainComponent() {
@@ -91,19 +91,9 @@ export function MainComponent() {
             setColumns(
               results.meta.fields.map((field, n) => ({
                 accessorKey: field,
-                header: ({ column }) => {
-                  return (
-                    <Button
-                      variant="ghost"
-                      onClick={() =>
-                        column.toggleSorting(column.getIsSorted() === "asc")
-                      }
-                    >
-                      {field}
-                      <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  )
-                },
+                header: ({ column }) => (
+                  <SortButton column={column} field={field} />
+                ),
               }))
             )
           else {
@@ -114,19 +104,9 @@ export function MainComponent() {
             setColumns(
               cols.map((field, n) => ({
                 accessorKey: n.toString(),
-                header: ({ column }) => {
-                  return (
-                    <Button
-                      variant="ghost"
-                      onClick={() =>
-                        column.toggleSorting(column.getIsSorted() === "asc")
-                      }
-                    >
-                      {field}
-                      <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  )
-                },
+                header: ({ column }) => (
+                  <SortButton column={column} field={field} />
+                ),
               }))
             )
           }
