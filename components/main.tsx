@@ -16,10 +16,13 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { DataTable } from "@/components/data-table"
+import { OptionsPopover } from "@/components/options-popover"
 
 export function MainComponent() {
   const [data, setData] = useState<any[]>([])
   const [columns, setColumns] = useState<ColumnDef<any>[]>([])
+
+  const [encoding, setEncoding] = useState("UTF-8")
 
   const actionColumns: ColumnDef<any>[] = [
     {
@@ -75,6 +78,7 @@ export function MainComponent() {
         header: true,
         skipEmptyLines: true,
         dynamicTyping: true,
+        encoding: encoding,
         complete: function (results) {
           console.log(results.data)
           console.log(results.meta.fields)
@@ -127,6 +131,7 @@ export function MainComponent() {
             onChange={changeHandler}
           />
         </div>
+        <OptionsPopover encoding={encoding} setEncoding={setEncoding} />
       </div>
       {data.length > 0 && (
         <div className="mt-8">
