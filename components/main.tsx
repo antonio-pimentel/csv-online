@@ -23,6 +23,9 @@ export function MainComponent() {
   const [columns, setColumns] = useState<ColumnDef<any>[]>([])
 
   const [encoding, setEncoding] = useState("UTF-8")
+  const [hasHeader, setHasHeader] = useState(true)
+
+  let detectedDelimiter = ";"
 
   const actionColumns: ColumnDef<any>[] = [
     {
@@ -75,17 +78,17 @@ export function MainComponent() {
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length)
       Papa.parse(e.target.files[0], {
-        header: true,
+        header: hasHeader,
         skipEmptyLines: true,
         dynamicTyping: true,
         encoding: encoding,
         complete: function (results) {
-          console.log(results.data)
-          console.log(results.meta.fields)
+          detectedDelimiter = results.meta.delimiter
           setData(results.data)
-          if (results.meta.fields)
+
+          if (hasHeader && results.meta.fields)
             setColumns(
-              results.meta.fields.map((field) => ({
+              results.meta.fields.map((field, n) => ({
                 accessorKey: field,
                 header: ({ column }) => {
                   return (
@@ -102,12 +105,39 @@ export function MainComponent() {
                 },
               }))
             )
+          else {
+            const d = results.data as any[][]
+            const cols = Array(
+              d.reduce((max, arr) => (arr.length > max ? arr.length : max), 0)
+            ).fill("")
+            setColumns(
+              cols.map((field, n) => ({
+                accessorKey: n.toString(),
+                header: ({ column }) => {
+                  return (
+                    <Button
+                      variant="ghost"
+                      onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                      }
+                    >
+                      {field}
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  )
+                },
+              }))
+            )
+          }
         },
       })
   }
 
   const exportCSV = () => {
-    const csv = Papa.unparse(data, { delimiter: ";", header: true })
+    const csv = Papa.unparse(data, {
+      delimiter: detectedDelimiter,
+      header: hasHeader,
+    })
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
     const link = document.createElement("a")
     const url = URL.createObjectURL(blob)
@@ -131,7 +161,12 @@ export function MainComponent() {
             onChange={changeHandler}
           />
         </div>
-        <OptionsPopover encoding={encoding} setEncoding={setEncoding} />
+        <OptionsPopover
+          encoding={encoding}
+          setEncoding={setEncoding}
+          hasHeader={hasHeader}
+          setHasHeader={setHasHeader}
+        />
       </div>
       {data.length > 0 && (
         <div className="mt-8">

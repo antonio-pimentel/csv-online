@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
 
 const encodingOptions = [
   { label: "UTF-8", value: "UTF-8" },
@@ -28,11 +29,15 @@ const encodingOptions = [
 type OptionPopoverProps = {
   encoding: string
   setEncoding: Dispatch<SetStateAction<string>>
+  hasHeader: boolean
+  setHasHeader: Dispatch<SetStateAction<boolean>>
 }
 
 const OptionsPopover: FC<OptionPopoverProps> = ({
   encoding,
   setEncoding,
+  hasHeader,
+  setHasHeader,
 }): ReactElement => {
   const EncodingSelect = () => (
     <div className="flex items-center gap-4">
@@ -57,6 +62,17 @@ const OptionsPopover: FC<OptionPopoverProps> = ({
     </div>
   )
 
+  const HeaderSwitch = () => (
+    <div className="flex items-center space-x-2">
+      <Label htmlFor="header-switch">Header</Label>
+      <Switch
+        id="header-switch"
+        defaultChecked={hasHeader}
+        onCheckedChange={setHasHeader}
+      />
+    </div>
+  )
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -65,7 +81,8 @@ const OptionsPopover: FC<OptionPopoverProps> = ({
           <span className="sr-only">Open popover</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="">
+      <PopoverContent className="flex flex-col gap-4">
+        <HeaderSwitch />
         <EncodingSelect />
       </PopoverContent>
     </Popover>
