@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { ColumnDef } from "@tanstack/react-table"
-import { Edit2, X } from "lucide-react"
+import { ArrowUpDown, Edit2, X } from "lucide-react"
 import Papa from "papaparse"
 
 import { Button } from "@/components/ui/button"
@@ -19,14 +19,14 @@ export function MainComponent() {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <Button
+            {/* <Button
               variant="outline"
               className="h-8 w-8 p-0"
               onClick={(e) => console.log("Edit row")}
             >
               <span className="sr-only">Edit row</span>
               <Edit2 className="h-4 w-4" />
-            </Button>
+            </Button> */}
             <Button
               variant="outline"
               className="h-8 w-8 p-0"
@@ -59,7 +59,19 @@ export function MainComponent() {
             setColumns(
               results.meta.fields.map((field) => ({
                 accessorKey: field,
-                header: field,
+                header: ({ column }) => {
+                  return (
+                    <Button
+                      variant="ghost"
+                      onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                      }
+                    >
+                      {field}
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  )
+                },
               }))
             )
         },
