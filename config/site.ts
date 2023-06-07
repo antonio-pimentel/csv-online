@@ -1,7 +1,7 @@
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-  name: "CVS Editor",
+  name: "CSV Viewer",
   description:
     "Import, view, edit and export csv files online, from your browser.",
   mainNav: [],
