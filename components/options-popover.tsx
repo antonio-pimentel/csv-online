@@ -31,6 +31,8 @@ type OptionPopoverProps = {
   setEncoding: Dispatch<SetStateAction<string>>
   hasHeader: boolean
   setHasHeader: Dispatch<SetStateAction<boolean>>
+  skipEmpty: boolean
+  setSkipEmpty: Dispatch<SetStateAction<boolean>>
 }
 
 const OptionsPopover: FC<OptionPopoverProps> = ({
@@ -38,6 +40,8 @@ const OptionsPopover: FC<OptionPopoverProps> = ({
   setEncoding,
   hasHeader,
   setHasHeader,
+  skipEmpty,
+  setSkipEmpty,
 }): ReactElement => {
   const EncodingSelect = () => (
     <div className="flex items-center gap-4">
@@ -73,6 +77,17 @@ const OptionsPopover: FC<OptionPopoverProps> = ({
     </div>
   )
 
+  const SkipEmptySwitch = () => (
+    <div className="flex items-center space-x-2">
+      <Label htmlFor="skipEmpty-switch">Skip empty lines </Label>
+      <Switch
+        id="skipEmpty-switch"
+        defaultChecked={skipEmpty}
+        onCheckedChange={setSkipEmpty}
+      />
+    </div>
+  )
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -83,6 +98,7 @@ const OptionsPopover: FC<OptionPopoverProps> = ({
       </PopoverTrigger>
       <PopoverContent className="flex flex-col gap-4">
         <HeaderSwitch />
+        <SkipEmptySwitch />
         <EncodingSelect />
       </PopoverContent>
     </Popover>

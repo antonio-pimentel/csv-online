@@ -24,6 +24,7 @@ export function MainComponent() {
 
   const [encoding, setEncoding] = useState("UTF-8")
   const [hasHeader, setHasHeader] = useState(true)
+  const [skipEmpty, setSkipEmpty] = useState(false)
 
   let detectedDelimiter = ";"
 
@@ -79,7 +80,7 @@ export function MainComponent() {
     if (e.target.files?.length)
       Papa.parse(e.target.files[0], {
         header: hasHeader,
-        skipEmptyLines: true,
+        skipEmptyLines: skipEmpty,
         dynamicTyping: true,
         encoding: encoding,
         complete: function (results) {
@@ -137,6 +138,7 @@ export function MainComponent() {
     const csv = Papa.unparse(data, {
       delimiter: detectedDelimiter,
       header: hasHeader,
+      skipEmptyLines: skipEmpty,
     })
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
     const link = document.createElement("a")
@@ -166,6 +168,8 @@ export function MainComponent() {
           setEncoding={setEncoding}
           hasHeader={hasHeader}
           setHasHeader={setHasHeader}
+          skipEmpty={skipEmpty}
+          setSkipEmpty={setSkipEmpty}
         />
       </div>
       {data.length > 0 && (
