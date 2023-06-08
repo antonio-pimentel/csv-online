@@ -2,20 +2,21 @@
 
 import { useState } from "react"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Edit2, MoreVertical, X } from "lucide-react"
+import { Edit2, MoreVertical, X } from "lucide-react"
 import Papa from "papaparse"
 
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { DataTable, SortButton } from "@/components/data-table"
+import { DialogMenu } from "@/components/dialog-menu"
 import { OptionsPopover } from "@/components/options-popover"
 
 export function MainComponent() {
@@ -24,7 +25,7 @@ export function MainComponent() {
 
   const [encoding, setEncoding] = useState("UTF-8")
   const [hasHeader, setHasHeader] = useState(true)
-  const [skipEmpty, setSkipEmpty] = useState(false)
+  const [skipEmpty, setSkipEmpty] = useState(true)
 
   let detectedDelimiter = ";"
 
@@ -32,20 +33,26 @@ export function MainComponent() {
     {
       id: "actions",
       header: () => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {/* <DropdownMenuLabel>Actions</DropdownMenuLabel> */}
-            <DropdownMenuItem onClick={exportCSV}>Export csv</DropdownMenuItem>
-            {/* <DropdownMenuSeparator /> */}
-            {/* <DropdownMenuItem>View customer</DropdownMenuItem> */}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Dialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DialogTrigger asChild>
+                <DropdownMenuItem>Add row</DropdownMenuItem>
+              </DialogTrigger>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={exportCSV}>
+                Export csv
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DialogMenu labels={Object.keys(data[0])} addRow={addRow} />
+        </Dialog>
       ),
       cell: ({ row }) => {
         return (
@@ -81,13 +88,12 @@ export function MainComponent() {
       Papa.parse(e.target.files[0], {
         header: hasHeader,
         skipEmptyLines: skipEmpty,
-        dynamicTyping: true,
+        // dynamicTyping: true,
         encoding: encoding,
         complete: function (results) {
           detectedDelimiter = results.meta.delimiter
           setData(results.data)
-
-          if (hasHeader && results.meta.fields)
+          if (hasHeader && results.meta.fields) {
             setColumns(
               results.meta.fields.map((field, n) => ({
                 accessorKey: field,
@@ -96,7 +102,7 @@ export function MainComponent() {
                 ),
               }))
             )
-          else {
+          } else {
             const d = results.data as any[][]
             const cols = Array(
               d.reduce((max, arr) => (arr.length > max ? arr.length : max), 0)
@@ -112,6 +118,10 @@ export function MainComponent() {
           }
         },
       })
+  }
+
+  const addRow = (row: unknown) => {
+    setData((prev) => [row, ...prev])
   }
 
   const exportCSV = () => {

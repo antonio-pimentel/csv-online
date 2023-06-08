@@ -42,7 +42,7 @@ const OptionsPopover: FC<OptionPopoverProps> = ({
   setHasHeader,
   skipEmpty,
   setSkipEmpty,
-}): ReactElement => {
+}) => {
   const EncodingSelect = () => (
     <div className="flex items-center gap-4">
       <Label>Encoding</Label>
