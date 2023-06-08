@@ -21,29 +21,32 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
-type DialogMenuProps = {
+type DialogFormProps = {
+  title: string
   labels: string[]
-  addRow: (row: unknown) => void
+  values: {}
+  onSubmit: (row: unknown) => void
 }
 
-export function DialogMenu({ labels, addRow }: DialogMenuProps) {
+export function DialogForm({
+  title,
+  labels,
+  values,
+  onSubmit,
+}: DialogFormProps) {
   const formSchema = z.object(
     labels.reduce((acc, field) => ({ ...acc, [field]: z.string() }), {})
   )
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: labels.reduce((acc, field) => ({ ...acc, [field]: "" }), {}),
+    defaultValues: values,
   })
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    addRow(values)
-  }
 
   return (
     <DialogContent className="sm:max-w-[425px]">
       <DialogHeader>
-        <DialogTitle>Add row</DialogTitle>
+        <DialogTitle>{title}</DialogTitle>
       </DialogHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -64,7 +67,7 @@ export function DialogMenu({ labels, addRow }: DialogMenuProps) {
             />
           ))}
           <DialogFooter>
-            <Button type="submit">Save row</Button>
+            <Button type="submit">Save</Button>
           </DialogFooter>
         </form>
       </Form>

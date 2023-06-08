@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { DataTable, SortButton } from "@/components/data-table"
-import { DialogMenu } from "@/components/dialog-menu"
+import { DialogForm } from "@/components/dialog-form"
 import { OptionsPopover } from "@/components/options-popover"
 
 export function MainComponent() {
@@ -33,38 +33,64 @@ export function MainComponent() {
     {
       id: "actions",
       header: () => (
-        <Dialog>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DialogTrigger asChild>
-                <DropdownMenuItem>Add row</DropdownMenuItem>
-              </DialogTrigger>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={exportCSV}>
-                Export csv
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <DialogMenu labels={Object.keys(data[0])} addRow={addRow} />
-        </Dialog>
+        <div className="flex justify-end">
+          <Dialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DialogTrigger asChild>
+                  <DropdownMenuItem>Add row</DropdownMenuItem>
+                </DialogTrigger>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={exportCSV}>
+                  Export csv
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DialogForm
+              title="Add row"
+              labels={Object.keys(data[0])}
+              values={Object.keys(data[0]).reduce(
+                (acc, field) => ({ ...acc, [field]: "" }),
+                {}
+              )}
+              onSubmit={(values) => {
+                setData((prev) => [values, ...prev])
+              }}
+            />
+          </Dialog>
+        </div>
       ),
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            {/* <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
-              onClick={(e) => console.log("Edit row")}
-            >
-              <span className="sr-only">Edit row</span>
-              <Edit2 className="h-4 w-4" />
-            </Button> */}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="h-8 w-8 p-0"
+                  onClick={(e) => console.log(row)}
+                >
+                  <span className="sr-only">Edit row</span>
+                  <Edit2 className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogForm
+                title="Edit row"
+                labels={Object.keys(data[0])}
+                values={row.original}
+                onSubmit={(values) => {
+                  setData((prev) =>
+                    prev.map((r, i) => (i === row.index ? values : r))
+                  )
+                }}
+              />
+            </Dialog>
             <Button
               variant="outline"
               className="h-8 w-8 p-0"
@@ -118,10 +144,6 @@ export function MainComponent() {
           }
         },
       })
-  }
-
-  const addRow = (row: unknown) => {
-    setData((prev) => [row, ...prev])
   }
 
   const exportCSV = () => {
